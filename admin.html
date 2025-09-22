@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XOXO Nails Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Admin Scanner</h1>
+  <input type="password" id="password" placeholder="Enter password">
+  <button onclick="login()">Login</button>
+  <div id="scanner" style="width:300px; margin:auto; display:none;"></div>
+  <p id="msg"></p>
+
+  <script>
+    const ADMIN_PASSWORD = "XOXO123"; // Change this
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-WZ299RaOh2NxVW7GBInJCUDdw4vAbLo",
+  authDomain: "xoxonails-e3538.firebaseapp.com",
+  projectId: "xoxonails-e3538",
+  storageBucket: "xoxonails-e3538.firebasestorage.app",
+  messagingSenderId: "308475419286",
+  appId: "1:308475419286:web:17e6ef40d189568377c0b7"
+};
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function login() {
+      const pass = document.getElementById("password").value;
+      if (pass === ADMIN_PASSWORD) {
+        document.getElementById("scanner").style.display = "block";
+        startScanner();
+      } else {
+        alert("Wrong password!");
+      }
+    }
+
+    function startScanner() {
+      const html5QrCode = new Html5Qrcode("scanner");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        async (decodedText) => {
+          const ref = db.collection("customers").doc(decodedText);
+          const doc = await ref.get();
+          if (doc.exists) {
+            let visits = doc.data().visits + 1;
+            if (visits > 8) visits = 0; // reset after 8 visits
+            await ref.update({ visits: visits });
+            document.getElementById("msg").innerText = Visits: ${visits};
+          }
+        }
+      );
+    }
+  </script>
+</body>
+</html>
