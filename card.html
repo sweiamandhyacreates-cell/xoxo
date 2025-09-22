@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XOXO Nails Loyalty Card</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>XOXO Nails Loyalty Card</h1>
+  <canvas id="qr"></canvas>
+  <div id="card"></div>
+  <p id="reward"></p>
+
+  <div class="terms">
+    <p>Terms & Conditions:</p>
+    <p>- Must keep consistency or progress resets.</p>
+    <p>- Cannot combine with other offers/discounts.</p>
+    <p>- Non-transferable.</p>
+    <p>- New card after completion.</p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyC-WZ299RaOh2NxVW7GBInJCUDdw4vAbLo",
+  authDomain: "xoxonails-e3538.firebaseapp.com",
+  projectId: "xoxonails-e3538",
+  storageBucket: "xoxonails-e3538.firebasestorage.app",
+  messagingSenderId: "308475419286",
+  appId: "1:308475419286:web:17e6ef40d189568377c0b7"
+};
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const qr = new QRious({ element: document.getElementById("qr"), size: 150, value: id });
+
+    db.collection("customers").doc(id).onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const visits = data.visits;
+        let html = '<div class="circle-container">';
+        for (let i = 1; i <= 8; i++) {
+          if (i <= visits) {
+            html += <div class="circle filled">${i==4?"25%":" "}${i==8?"50%":""}</div>;
+          } else {
+            html += <div class="circle">${i==4?"25%":" "}${i==8?"50%":""}</div>;
+          }
+        }
+        html += '</div>';
+        document.getElementById("card").innerHTML = html;
+
+        if (visits == 4) document.getElementById("reward").innerText = "🎉 You unlocked 25% OFF!";
+        if (visits == 8) document.getElementById("reward").innerText = "🎉 You unlocked 50% OFF!";
+      }
+    });
+  </script>
+</body>
+</html>

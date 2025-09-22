@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XOXO Nails Loyalty Signup</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Welcome to XOXO Nails Loyalty</h1>
+  <p>Enter your details to get your loyalty card</p>
+  <input type="text" id="name" placeholder="Your Name"><br><br>
+  <input type="text" id="phone" placeholder="Your Phone Number"><br><br>
+  <button onclick="register()">Get My Loyalty Card</button>
+
+  <script>
+    // Paste your Firebase config here
+const firebaseConfig = {
+  apiKey: "AIzaSyC-WZ299RaOh2NxVW7GBInJCUDdw4vAbLo",
+  authDomain: "xoxonails-e3538.firebaseapp.com",
+  projectId: "xoxonails-e3538",
+  storageBucket: "xoxonails-e3538.firebasestorage.app",
+  messagingSenderId: "308475419286",
+  appId: "1:308475419286:web:17e6ef40d189568377c0b7"
+};
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function register() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      if (!name || !phone) {
+        alert("Enter both fields!");
+        return;
+      }
+      const ref = await db.collection("customers").add({
+        name: name,
+        phone: phone,
+        visits: 0
+      });
+      window.location.href = "card.html?id=" + ref.id;
+    }
+  </script>
+</body>
+</html>
